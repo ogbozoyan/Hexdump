@@ -1,11 +1,11 @@
 #include <iostream>
 #include <cstdio>
-#include <vector>
 #include <ncurses.h>
 
 using namespace std;
 
 FILE* f;
+fpos_t offst;
 char bytes[16];
 char clearbytes[16];
 int OFFSET = 0;
@@ -44,7 +44,6 @@ void print_file() {
                  clearbytes[0], clearbytes[1], clearbytes[2], clearbytes[3], clearbytes[4], clearbytes[5],
                  clearbytes[6], clearbytes[7], clearbytes[8], clearbytes[9], clearbytes[10],
                  clearbytes[11], clearbytes[12], clearbytes[13], clearbytes[14], clearbytes[15]);
-        //eof = false;
         refresh();
         line++;
         OFFSET+=16;
@@ -58,7 +57,6 @@ void print_file() {
                  clearbytes[0], clearbytes[1], clearbytes[2], clearbytes[3], clearbytes[4], clearbytes[5],
                  clearbytes[6], clearbytes[7], clearbytes[8], clearbytes[9], clearbytes[10],
                  clearbytes[11], clearbytes[12], clearbytes[13], clearbytes[14], clearbytes[15]);
-        //eof = true;
         refresh();
         line++;
         OFFSET+=16;
@@ -93,14 +91,25 @@ int main(int argc,char **argv) {
     init_ncurses();
 
     do {
-        switch (key = getch()){
-                case 's':
-                    if(eof)
-                        for(int i=0;i<48;i++) print_file();
+        switch (key = getch()) {
+            case 's':
+                if (eof)
+                    line = 0;
+                    for (int i = 0; i < 48; i++) {
+                        print_file();
+                    }
                 break;
-                case 'w':
-                    if(eof)
-                        for(int i=0;i<48;i++) print_file();
+            case 'w':
+                if (eof){
+                    line = 0;
+
+                    fgetpos(f,&offst);
+                    fsetpos(f,&offst-48);
+                for (int i = 0; i < 48; i++) {
+                    print_file();
+                    OFFSET -= 16;
+                }
+                    }
                 break;
                 case 'q':
                     flag = false;
