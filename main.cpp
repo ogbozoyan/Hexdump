@@ -67,17 +67,22 @@ int main(int argc,char **argv) {
     }
 
     fseek(f, 0, SEEK_SET);
-    init_ncurses();
 
+    init_ncurses();
     do {
-        switch (key = getch()) {
-            case 's':
-                    print_file();
+        switch (key = getch()){
+                case 's':
+                    for(int i=0;i<48;i++) print_file();
                 break;
-            case 'q':
-                flag = false;
+                case 'w':
+                    fseek(f,ftell(f)-96,SEEK_CUR);
+                    for(int i=0;i<48;i++) print_file();
                 break;
-            default:
+                case 'q':
+                    flag = false;
+                break;
+                default:
+                    flag = false;
                 break;
             }
     }while(flag);
